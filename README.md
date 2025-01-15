@@ -1,0 +1,1 @@
+Spring Boot project that implements the functionality to send messages using Solapi
