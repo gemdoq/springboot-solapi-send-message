@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class SolApiServiceTest {
+public class SolApiServiceTest {
 
 	@Value("${SOLAPI_API_MESSAGE_FROM}")
 	private String fromPhoneNumber;
