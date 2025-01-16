@@ -1,0 +1,5 @@
+solapi:
+  api:
+    key: ${SOLAPI_API_KEY}
+    secret: ${SOLAPI_API_SECRET}
+    url: ${SOLAPI_API_URL}
