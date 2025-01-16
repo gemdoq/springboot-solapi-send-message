@@ -2,6 +2,7 @@ package com.example.solapisendmessage.global.controller;
 
 import com.example.solapisendmessage.global.dto.SolApiSendMessageRequest;
 import com.example.solapisendmessage.global.service.SolApiService;
+import com.example.solapisendmessage.global.util.FixtureUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,36 +39,34 @@ public class SolApiControllerTest {
 
 	@Test
 	void testSendMessage() throws Exception {
-		// Given
-		SolApiSendMessageRequest request = new SolApiSendMessageRequest();
-		request.setFromPhoneNumber("01012345678");
-		request.setToPhoneNumber("01087654321");
-		request.setText("테스트 메시지");
+		// FixtureUtil에서 테스트 데이터를 가져옴
+		SolApiSendMessageRequest request = FixtureUtil.createTestRequest();
 
-		// Mocking the service layer
 		doReturn("Success").when(solApiService).sendMessage(any(Map.class));
 
-		// When
 		String requestBody = """
                 {
-                    "fromPhoneNumber": "01012345678",
-                    "toPhoneNumber": "01087654321",
-                    "text": "테스트 메시지"
+                    "fromPhoneNumber": "%s",
+                    "toPhoneNumber": "%s",
+                    "text": "%s"
                 }
-                """;
+                """.formatted(
+				FixtureUtil.TEST_PHONE_FROM,
+				FixtureUtil.TEST_PHONE_TO,
+				FixtureUtil.TEST_MESSAGE
+		);
 
 		mockMvc.perform(post("/api/solapi/send")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(requestBody))
 				.andExpect(status().isOk());
 
-		// Verify
 		ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
 		verify(solApiService, times(1)).sendMessage(captor.capture());
 
 		Map<String, Object> capturedMessage = captor.getValue();
-		assertThat(capturedMessage.get("from")).isEqualTo("01012345678");
-		assertThat(capturedMessage.get("to")).isEqualTo("01087654321");
-		assertThat(capturedMessage.get("text")).isEqualTo("테스트 메시지");
+		assertThat(capturedMessage.get("from")).isEqualTo(FixtureUtil.TEST_PHONE_FROM);
+		assertThat(capturedMessage.get("to")).isEqualTo(FixtureUtil.TEST_PHONE_TO);
+		assertThat(capturedMessage.get("text")).isEqualTo(FixtureUtil.TEST_MESSAGE);
 	}
 }
