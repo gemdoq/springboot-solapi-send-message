@@ -1,8 +1,10 @@
 package com.example.solapisendmessage.global.util;
 
+import com.example.solapisendmessage.global.dto.SMSMessage;
 import com.example.solapisendmessage.global.dto.SolApiSendMessageRequest;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * FixtureUtil
@@ -17,19 +19,16 @@ public class FixtureUtil {
 	public static final String TEST_PHONE_TO = "01087654321";
 	public static final String TEST_MESSAGE = "테스트 메시지";
 
-	// Map 생성 메서드
-	public static Map<String, Object> createTestMessageMap() {
-		return Map.of(
-				"from", TEST_PHONE_FROM,
-				"to", TEST_PHONE_TO,
-				"text", TEST_MESSAGE
-		);
+	// SMSMessage 객체 생성 메서드
+	public static SMSMessage createTestSMSMessage() {
+		SMSMessage.Message message = new SMSMessage.Message(TEST_PHONE_TO, TEST_PHONE_FROM, TEST_MESSAGE);
+		List<SMSMessage.Message> messages = Collections.singletonList(message);
+		return new SMSMessage(messages);
 	}
 
-	// 특정 객체 생성 메서드
+	// 특정 객체 생성 메서드 (SolApiSendMessageRequest)
 	public static SolApiSendMessageRequest createTestRequest() {
 		SolApiSendMessageRequest request = new SolApiSendMessageRequest();
-		request.setFromPhoneNumber(TEST_PHONE_FROM);
 		request.setToPhoneNumber(TEST_PHONE_TO);
 		request.setText(TEST_MESSAGE);
 		return request;
