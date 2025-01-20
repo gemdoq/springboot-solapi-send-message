@@ -13,10 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,16 +39,15 @@ public class SolApiControllerTest {
 		// FixtureUtil에서 테스트 데이터를 가져옴
 		SolApiSendMessageRequest request = FixtureUtil.createTestRequest();
 
-		doReturn("Success").when(solApiService).sendMessage(any(Map.class));
+		doReturn("메시지 전송 성공").when(solApiService)
+				.sendSmsMessage(anyString(), anyString());
 
 		String requestBody = """
                 {
-                    "fromPhoneNumber": "%s",
                     "toPhoneNumber": "%s",
                     "text": "%s"
                 }
                 """.formatted(
-				FixtureUtil.TEST_PHONE_FROM,
 				FixtureUtil.TEST_PHONE_TO,
 				FixtureUtil.TEST_MESSAGE
 		);
@@ -61,12 +57,14 @@ public class SolApiControllerTest {
 						.content(requestBody))
 				.andExpect(status().isOk());
 
-		ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
-		verify(solApiService, times(1)).sendMessage(captor.capture());
+		// 서비스 메서드 호출 여부 확인
+		ArgumentCaptor<String> toCaptor = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> textCaptor = ArgumentCaptor.forClass(String.class);
 
-		Map<String, Object> capturedMessage = captor.getValue();
-		assertThat(capturedMessage.get("from")).isEqualTo(FixtureUtil.TEST_PHONE_FROM);
-		assertThat(capturedMessage.get("to")).isEqualTo(FixtureUtil.TEST_PHONE_TO);
-		assertThat(capturedMessage.get("text")).isEqualTo(FixtureUtil.TEST_MESSAGE);
+		verify(solApiService, times(1)).sendSmsMessage(toCaptor.capture(), textCaptor.capture());
+
+		// 요청 데이터 검증
+		assertThat(toCaptor.getValue()).isEqualTo(FixtureUtil.TEST_PHONE_TO);
+		assertThat(textCaptor.getValue()).isEqualTo(FixtureUtil.TEST_MESSAGE);
 	}
 }
