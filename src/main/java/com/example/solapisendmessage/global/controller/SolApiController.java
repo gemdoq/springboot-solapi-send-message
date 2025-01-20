@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/solapi")
 public class SolApiController {
@@ -22,13 +20,10 @@ public class SolApiController {
 	@PostMapping("/send")
 	public String sendMessage(@RequestBody SolApiSendMessageRequest request) {
 
-		Map<String, Object> message = Map.of(
-				"from", request.getFromPhoneNumber(),
-				"to", request.getToPhoneNumber(),
-				"text", request.getText()
-		);
+		String to = request.getToPhoneNumber();
+		String text = request.getText();
 
-		solApiService.sendMessage(message);
+		solApiService.sendSmsMessage(to, text);
 
 		return "메시지 전송 성공";
 	}
