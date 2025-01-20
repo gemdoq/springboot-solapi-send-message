@@ -1,6 +1,7 @@
 package com.example.solapisendmessage.global.service;
 
 import com.example.solapisendmessage.global.api.SolApiFeignClient;
+import com.example.solapisendmessage.global.dto.SMSMessage;
 import com.example.solapisendmessage.global.util.FixtureUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,9 +9,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -28,15 +26,18 @@ public class SolApiServiceTest {
 	}
 
 	@Test
-	void testSendMessage() {
+	void testSendSmsMessage() {
 		// FixtureUtil에서 테스트 데이터를 가져옴
-		Map<String, Object> request = FixtureUtil.createTestMessageMap();
+		SMSMessage testSmsMessage = FixtureUtil.createTestSMSMessage();
 
-		when(solApiFeignClient.sendMessage(anyMap())).thenReturn("{\"status\":\"success\"}");
+		// Mocking API 응답 설정
+		when(solApiFeignClient.sendMessage(any(SMSMessage.class))).thenReturn("{\"status\":\"success\"}");
 
-		String response = solApiService.sendMessage(request);
+		// 서비스 호출
+		String response = solApiService.sendSmsMessage(FixtureUtil.TEST_PHONE_TO, FixtureUtil.TEST_MESSAGE);
 
+		// 검증
 		assert response.equals("{\"status\":\"success\"}");
-		verify(solApiFeignClient, times(1)).sendMessage(request);
+		verify(solApiFeignClient, times(1)).sendMessage(any(SMSMessage.class));
 	}
 }
